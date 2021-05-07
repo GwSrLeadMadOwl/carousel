@@ -3,12 +3,25 @@ import ReactDOM from "react-dom";
 
 import "./style.scss";
 
+import LIST_DATA from "./data";
+
 const App = () => {
     return (
-        <div className="card">
-            <img src="../img/1330x748_V4-MY20_ACC_TO_3-4-ANT-DX_AMB_2.jpg" alt="superbike" />
-            <h1>{`ducati panigale v4s`.toUpperCase()}</h1>
-        </div>
+        <>
+            <div className="carousel">
+                <div className="card-section">
+                    {LIST_DATA.map((bike) => (
+                        <div id={bike.id} className="card">
+                            <img src={bike.img} alt={bike.img} />
+                            <h1>{`${bike.name}`.toUpperCase()}</h1>
+                        </div>)
+                    )}
+                </div>
+                <div className="dots">
+                    {LIST_DATA.length}
+                </div>
+            </div>
+        </>
     );
 };
 
