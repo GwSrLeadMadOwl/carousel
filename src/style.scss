@@ -5,6 +5,7 @@ $font: 'Montserrat', sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    scroll-behavior: smooth;
 }
 
 body{
@@ -20,31 +21,37 @@ body{
         width: 40%;
         text-align: center;
         .card-section{
-            display: flex;
-            align-items: center;
-            justify-content: start;
-            text-align: center;
-            overflow-x: scroll;
-            .card{
-                margin: 0 5%;
-                flex: 1;
-                min-width: 90%;
-                border: 1px solid $textColor;
-                border-radius: 25px;
-                overflow: hidden;
-                img{
-                    width: 100%;
-                    aspect-ratio: 4 / 3;
-                    object-fit: cover;
-                }
-                h1{
-                    margin: 15px 0;
+            position: relative;
+            overflow-x: hidden;
+            .scroll{
+                display: flex;
+                align-items: center;
+                justify-content: start;
+                .card{
+                    flex: 1;
+                    min-width: 100%;
+                    height: 700px;
+                    border: 1px solid $textColor;
+                    border-radius: 25px;
+                    overflow: hidden;
+                    pointer-events: none;
+                    user-select: none;
+                    img{
+                        width: 100%;
+                        height: 87%;
+                        // aspect-ratio: 4 / 3;
+                        display: block;
+                        object-fit: cover;
+                    }
+                    h1{
+                        margin: 15px 0;
+                        font-size: 24px;
+                    }
                 }
             }
         }
-        
-        .dots{
-
+        select{
+            margin-top: 15px;
         }
     }
 }
