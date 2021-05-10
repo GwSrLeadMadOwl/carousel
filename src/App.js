@@ -14,8 +14,31 @@ const App = () => {
         movement: 0
     });
 
+    let lastTouch = 0;
+
     const handleWheel = (e) => {
-        handleMovement(e.deltaX);
+        if (window.innerWidth > 1024)
+            handleMovement(e.deltaY || e.deltaX);
+    };
+
+    const handleTouchStart = (e) => {
+        lastTouch = e.nativeEvent.touches[0].clientX;
+    };
+
+    const handleTouchMove = (e) => {
+        const delta = lastTouch - e.nativeEvent.touches[0].clientX;
+        lastTouch = e.nativeEvent.touches[0].clientX;
+        if (window.innerWidth < 1024) {
+            if (delta < 0)
+                handleMovement(delta / 100000);
+            if (delta > 0)
+                handleMovement(delta * 1000000);
+        }
+
+    };
+
+    const handleTouchEnd = () => {
+        lastTouch = 0;
     };
 
     const handleMovement = (delta) => {
@@ -24,12 +47,14 @@ const App = () => {
             let nextMovement = list.movement + delta;
 
             if (nextMovement < 0) {
-                nextMovement = 0;
-            }
-            if (nextMovement > maxLength * 100) {
                 nextMovement = maxLength * 100;
             }
+            if (nextMovement > maxLength * 100) {
+                nextMovement = 0;
+            }
             return {
+                bikes: LIST_DATA,
+                currentIndex: 0,
                 movement: nextMovement,
             };
         });
@@ -37,7 +62,11 @@ const App = () => {
 
     return (
         <>
-            <div className="carousel" onWheel={handleWheel}>
+            <div className="carousel"
+                onWheel={handleWheel}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}>
                 <div className="card-section">
                     <div className="scroll" style={{ transform: `translateX(${list.movement * -1}%)` }}>
                         <Card bikes={list.bikes} />
