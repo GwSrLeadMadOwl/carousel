@@ -14,7 +14,8 @@ const App = () => {
         movement: 0
     });
 
-    let lastTouch = 0;
+    let start;
+    let end;
 
     const handleWheel = (e) => {
         if (window.innerWidth > 1024)
@@ -22,23 +23,38 @@ const App = () => {
     };
 
     const handleTouchStart = (e) => {
-        lastTouch = e.nativeEvent.touches[0].clientX;
+        start = Math.round(e.nativeEvent.touches[0].clientX);
+        console.log("TOUCH");
+        // return start;
     };
 
     const handleTouchMove = (e) => {
-        const delta = lastTouch - e.nativeEvent.touches[0].clientX;
-        lastTouch = e.nativeEvent.touches[0].clientX;
-        if (window.innerWidth < 1024) {
-            if (delta < 0)
-                handleMovement(delta / 100000);
-            if (delta > 0)
-                handleMovement(delta * 1000000);
-        }
+        let delta = 0;
+        end = Math.round(e.nativeEvent.touches[0].clientX);
+        start = Math.round(e.nativeEvent.touches[0].clientX);
 
+        if (window.innerWidth < 1024) {
+            // swipe right
+            if (start > window.innerWidth / 2) {
+                console.log("Start greater: ", start);
+                console.log("End: ", end);
+                delta = window.innerWidth - e.nativeEvent.touches[0].clientX;
+                console.log(delta);
+                handleMovement(delta / 100);
+            }
+            //swipe left
+            if (start < window.innerWidth / 2) {
+                console.log("Start: ", start);
+                console.log("End greater: ", end);
+                delta = end + e.nativeEvent.touches[0].clientX;
+                console.log(delta);
+                handleMovement(-(delta / 100));
+            }
+        }
     };
 
     const handleTouchEnd = () => {
-        lastTouch = 0;
+        console.log("RELEASE");
     };
 
     const handleMovement = (delta) => {
@@ -83,4 +99,3 @@ const App = () => {
 };
 
 ReactDOM.render(<App />, document.querySelector("#root"));
-// };
