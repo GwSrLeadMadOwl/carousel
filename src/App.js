@@ -14,8 +14,8 @@ const App = () => {
         movement: 0
     });
 
-    let start;
-    let end;
+    const [start, setStart] = useState(0);
+    let end = 0;
 
     const handleWheel = (e) => {
         if (window.innerWidth > 1024)
@@ -30,12 +30,14 @@ const App = () => {
 
     const handleTouchMove = (e) => {
         let delta = 0;
+        setStart(Math.round(e.nativeEvent.touches[0].clientX));
         end = Math.round(e.nativeEvent.touches[0].clientX);
-        start = Math.round(e.nativeEvent.touches[0].clientX);
+
 
         if (window.innerWidth < 1024) {
             // swipe right
-            if (start > window.innerWidth / 2) {
+            // if (start > window.innerWidth / 2) {
+            if (start > end) {
                 console.log("Start greater: ", start);
                 console.log("End: ", end);
                 delta = window.innerWidth - e.nativeEvent.touches[0].clientX;
@@ -43,7 +45,8 @@ const App = () => {
                 handleMovement(delta / 100);
             }
             //swipe left
-            if (start < window.innerWidth / 2) {
+            // else if (start < window.innerWidth / 2) {
+            else if (start < end) {
                 console.log("Start: ", start);
                 console.log("End greater: ", end);
                 delta = end + e.nativeEvent.touches[0].clientX;
@@ -54,6 +57,7 @@ const App = () => {
     };
 
     const handleTouchEnd = () => {
+        end = 0;
         console.log("RELEASE");
     };
 
