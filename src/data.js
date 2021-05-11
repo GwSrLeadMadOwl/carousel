@@ -89,6 +89,11 @@ const LIST_DATA = [
         name: "suzuki hayabusa",
         img: "../img/suzuki_hayabusa.jpg"
     },
+    {
+        id: 19,
+        name: "ducati panigale v4s",
+        img: "../img/ducati_panigale_v4s.jpg"
+    },
 ];
 
 export default LIST_DATA;

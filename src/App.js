@@ -10,7 +10,7 @@ import LIST_DATA from "./data";
 const App = () => {
     const [list, setList] = useState({
         bikes: LIST_DATA,
-        currentImg: 0,
+        currentIndex: 0,
         movement: 0
     });
 
@@ -19,16 +19,18 @@ const App = () => {
     let [start, setStart] = useState(0);
     let end = 0;
     let delta = 0;
-    let touchUp = false;
+
 
     const handleWheel = (e) => {
-        if (window.innerWidth > 1024)
+        if (window.innerWidth > 1024) {
+            const wheelTimeout = setTimeout(() => handleMovementEnd(), 100);
+            clearTimeout(wheelTimeout);
             handleMovement(e.deltaY || e.deltaX);
+        }
     };
 
     const handleTouchStart = (e) => {
         start = Math.round(e.nativeEvent.touches[0].clientX);
-        touchUp = false;
     };
 
     const handleTouchMove = (e) => {
@@ -43,22 +45,59 @@ const App = () => {
             }
             //swipe left
             else if (start < end) {
-                delta = (end + e.nativeEvent.touches[0].clientX) / devider;
+                delta = e.nativeEvent.touches[0].clientX / devider;
                 handleMovement(-delta);
             }
         }
     };
 
     const handleTouchEnd = () => {
-        touchUp = true;
+        handleMovementEnd();
         end = 0;
     };
 
+    const handleMovementEnd = () => {
+        const { bikes, movement } = list;
+
+        const endPosition = movement / 100;
+        const endPartial = endPosition % 1;
+        console.log(endPartial, "%");
+
+        const endingIndex = endPosition - endPartial;
+        console.log(endingIndex, "endingIndex");
+
+        let nextIndex = endingIndex;
+
+        if (start < window.innerWidth / 2 && endPartial > 0.1) {
+            // if (endPartial > 0.2) {
+            nextIndex++;
+            if (nextIndex > bikes.length)
+                nextIndex = 0;
+        }
+        // if (start > window.innerWidth / 2 && endPartial > 0.2) {
+        else if (endPartial > 0.1) {
+            nextIndex -= 0;
+            if (nextIndex < 0)
+                nextIndex = bikes.length - 2;
+        }
+
+        transitionTo(nextIndex);
+    };
+
+    const transitionTo = (index) => {
+        console.log(index);
+        setList({
+            bikes: LIST_DATA,
+            currentIndex: index,
+            movement: index * 100,
+        });
+    };
+
     const handleMovement = (delta) => {
+        let nextMovement;
         setList((list) => {
             const maxLength = list.bikes.length - 1;
-            let nextMovement = list.movement + delta;
-            let currentBike;
+            nextMovement = list.movement + delta;
 
             //infinite scroll
             if (nextMovement < 0) {
@@ -68,19 +107,11 @@ const App = () => {
                 nextMovement = 0;
             }
 
-            //animated swipe of images
-            if (delta > 0 && touchUp) {
-                currentBike = list.currentImg + 1;
-            }
-            if (delta < 0 && touchUp) {
-                currentBike = list.currentImg - 1;
-            }
-
             return {
                 bikes: LIST_DATA,
-                currentImg: currentBike,
                 movement: nextMovement,
             };
+
         });
     };
 
