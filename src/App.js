@@ -10,12 +10,16 @@ import LIST_DATA from "./data";
 const App = () => {
     const [list, setList] = useState({
         bikes: LIST_DATA,
-        currentIndex: 0,
+        currentImg: 0,
         movement: 0
     });
 
-    const [start, setStart] = useState(0);
+    const devider = 250;
+
+    let [start, setStart] = useState(0);
     let end = 0;
+    let delta = 0;
+    let touchUp = false;
 
     const handleWheel = (e) => {
         if (window.innerWidth > 1024)
@@ -24,57 +28,57 @@ const App = () => {
 
     const handleTouchStart = (e) => {
         start = Math.round(e.nativeEvent.touches[0].clientX);
-        console.log("TOUCH");
-        // return start;
+        touchUp = false;
     };
 
     const handleTouchMove = (e) => {
-        let delta = 0;
         setStart(Math.round(e.nativeEvent.touches[0].clientX));
         end = Math.round(e.nativeEvent.touches[0].clientX);
 
-
         if (window.innerWidth < 1024) {
             // swipe right
-            // if (start > window.innerWidth / 2) {
             if (start > end) {
-                console.log("Start greater: ", start);
-                console.log("End: ", end);
-                delta = window.innerWidth - e.nativeEvent.touches[0].clientX;
-                console.log(delta);
-                handleMovement(delta / 100);
+                delta = (window.innerWidth - e.nativeEvent.touches[0].clientX) / devider;
+                handleMovement(delta);
             }
             //swipe left
-            // else if (start < window.innerWidth / 2) {
             else if (start < end) {
-                console.log("Start: ", start);
-                console.log("End greater: ", end);
-                delta = end + e.nativeEvent.touches[0].clientX;
-                console.log(delta);
-                handleMovement(-(delta / 100));
+                delta = (end + e.nativeEvent.touches[0].clientX) / devider;
+                handleMovement(-delta);
             }
         }
     };
 
     const handleTouchEnd = () => {
+        touchUp = true;
         end = 0;
-        console.log("RELEASE");
     };
 
     const handleMovement = (delta) => {
         setList((list) => {
             const maxLength = list.bikes.length - 1;
             let nextMovement = list.movement + delta;
+            let currentBike;
 
+            //infinite scroll
             if (nextMovement < 0) {
                 nextMovement = maxLength * 100;
             }
             if (nextMovement > maxLength * 100) {
                 nextMovement = 0;
             }
+
+            //animated swipe of images
+            if (delta > 0 && touchUp) {
+                currentBike = list.currentImg + 1;
+            }
+            if (delta < 0 && touchUp) {
+                currentBike = list.currentImg - 1;
+            }
+
             return {
                 bikes: LIST_DATA,
-                currentIndex: 0,
+                currentImg: currentBike,
                 movement: nextMovement,
             };
         });
