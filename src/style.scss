@@ -32,6 +32,7 @@ body{
                 justify-content: start;
                 transition-property: transform;
                 will-change: transform;
+                // transition-duration: .5s;
                 .card{
                     flex: 1;
                     min-width: 100%;
