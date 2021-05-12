@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import ReactDOM from "react-dom";
-
+import { useState } from "react";
 import Card from "./components/card.jsx";
 
 import "./style.scss";
@@ -25,7 +23,8 @@ const App = () => {
     const handleWheel = (e) => {
         let scrollEnds;
         if (window.innerWidth > 1024) {
-            handleMovement(e.deltaY / limiter || e.deltaX / limiter);
+            handleMovement(e.deltaY || e.deltaX);
+            // handleMovement(e.deltaY / limiter || e.deltaX / limiter);
 
             //BUG WITH SWIPES
             setDuration(1);
@@ -148,4 +147,4 @@ const App = () => {
     );
 };
 
-ReactDOM.render(<App />, document.querySelector("#root"));
+export default App;
