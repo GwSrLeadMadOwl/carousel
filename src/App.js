@@ -1,13 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Card from "./components/card.jsx";
 
-import "./style.scss";
-
-import LIST_DATA from "./data";
+import LIST_DATA from "./data.js";
 
 const App = () => {
+    // const [list, setList] = useState({
+    //     bikes: LIST_DATA,
+    //     movement: 0,
+    // });
     const [list, setList] = useState({
-        bikes: LIST_DATA,
         movement: 0,
     });
 
@@ -18,28 +19,32 @@ const App = () => {
     let end = 0;
     let delta = 0;
 
-    let [duration, setDuration] = useState(0.5);
+    let [duration, setDuration] = useState(0);
 
     const handleWheel = (e) => {
-        let scrollEnds;
+        // let scrollEnds;
         if (window.innerWidth > 1024) {
+            setDuration(0);
             handleMovement(e.deltaY || e.deltaX);
             // handleMovement(e.deltaY / limiter || e.deltaX / limiter);
 
-            //BUG WITH SWIPES
-            setDuration(1);
-            clearTimeout(scrollEnds);
-            scrollEnds = setTimeout((e) => {
-                // if (e.deltaX === 0 && e.deltaY === 0)
-                handleTouchEnd(); console.log("MUST FIT!");
-            }, 500);
+            //BUG WITH SWIPES USING MOUSE SCROLL
+            // setDuration(1);
+            // window.addEventListener("scroll", handleTouchEnd);
+            // window.removeEventListener("scroll", handleTouchEnd);
+            // clearTimeout(scrollEnds);
+            // scrollEnds = setTimeout((e) => {
+            //     // if (e.deltaX === 0 && e.deltaY === 0)
+            //     handleTouchEnd(); console.log("MUST FIT!");
+            // }, 500);
         }
         console.log(e.deltaX, e.deltaY);
     };
 
+    //SWIPES FOR MOBILE
     const handleTouchStart = (e) => {
         start = Math.round(e.nativeEvent.touches[0].clientX);
-        setDuration(0.5);
+        // setDuration(0.5);
     };
 
     const handleTouchMove = (e) => {
@@ -63,35 +68,34 @@ const App = () => {
     const handleMovement = (delta) => {
         let nextMovement;
         setList((list) => {
-            const maxLength = list.bikes.length - 1;
+            const maxLength = LIST_DATA.length - 1;
             nextMovement = list.movement + delta;
+
+            setDuration(0.5);
 
             //infinite scroll
             if (nextMovement < 0) {
                 nextMovement = maxLength * 100;
-                // duration = 0;
                 setDuration(0);
             }
             if (nextMovement > maxLength * 100) {
                 nextMovement = 0;
-                // duration = 0;
                 setDuration(0);
             }
 
             return {
-                bikes: LIST_DATA,
                 movement: nextMovement,
             };
         });
     };
 
     const handleTouchEnd = () => {
-        const { bikes, movement } = list;
-        fitPhoto(bikes, movement);
+        const { movement } = list;
+        fitPhoto(movement);
         end = 0;
     };
 
-    const fitPhoto = (bikes, movement) => {
+    const fitPhoto = (movement) => {
         const endPosition = movement / 100;
         const endPartial = endPosition % 1;
         const endingIndex = endPosition - endPartial;
@@ -99,14 +103,14 @@ const App = () => {
 
         if (start < window.innerWidth / 2 && endPartial > 0.1) {
             nextIndex++;
-            if (nextIndex > bikes.length) {
+            if (nextIndex > LIST_DATA.length) {
                 nextIndex = -1;
             }
         }
         else if (endPartial > 0.1) {
             nextIndex -= 0;
             if (nextIndex < 0) {
-                nextIndex = bikes.length - 2;
+                nextIndex = LIST_DATA.length - 2;
             }
         }
         transitionTo(nextIndex);
@@ -114,13 +118,11 @@ const App = () => {
 
     const transitionTo = (index) => {
         setList({
-            bikes: LIST_DATA,
-            currentIndex: index,
             movement: index * 100
         });
     };
 
-    //select specific bike
+    //select specific bike by option name
     const handleChange = (e) => {
         transitionTo(e.target.value - 1);
     };
@@ -134,11 +136,11 @@ const App = () => {
                 onTouchEnd={handleTouchEnd}>
                 <div className="card-section">
                     <div className="scroll" style={{ transform: `translateX(${list.movement * -1}%)`, transitionDuration: `${duration}s` }}>
-                        <Card bikes={list.bikes} />
+                        <Card bikes={LIST_DATA} />
                     </div>
                 </div>
                 <select name="bikes" id="bikes" onChange={handleChange}>
-                    {list.bikes.map((bike) => (
+                    {LIST_DATA.map((bike) => (
                         <option value={bike.id} key={bike.id}>{bike.name.toUpperCase()}</option>
                     ))}
                 </select>
